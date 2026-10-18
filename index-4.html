@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#06111f">
+<title>PiggyEarn — Complete tasks & earn</title>
+<style>
+:root{--p:#625bf6;--p2:#8179ff;--ink:#17182b;--muted:#73768c;--bg:#f7f7fc;--card:#fff;--line:#ececf4;--green:#16a36f;--red:#e35c68;--shadow:0 12px 35px rgba(31,28,88,.08)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink)}
+button,input,select{font:inherit}button{cursor:pointer}
+.hidden{display:none!important}
+.auth{min-height:100svh;display:flex;align-items:center;justify-content:center;padding:22px;background:linear-gradient(145deg,#625bf6,#8a83ff)}
+.authbox{width:min(440px,100%);background:#fff;border-radius:28px;padding:28px 22px;box-shadow:0 25px 70px #29236c55}
+.logo{font-weight:900;font-size:28px;letter-spacing:-1px}.logo span{color:var(--p)}
+.authhero{padding:16px 0 22px}.authhero h1{font-size:31px;line-height:1.1;margin:10px 0}.authhero p{color:var(--muted);line-height:1.6;margin:0}
+label{display:block;font-size:13px;font-weight:750;margin:15px 0 7px}input,select{width:100%;border:1px solid var(--line);background:#fafaff;padding:14px;border-radius:13px;outline:none;transition:.2s}
+input:focus{border-color:var(--p);box-shadow:0 0 0 4px #625bf615}
+.btn{border:0;border-radius:13px;padding:13px 16px;font-weight:800;transition:.18s}.btn:active{transform:scale(.97)}
+.primary{background:linear-gradient(135deg,var(--p),var(--p2));color:white;box-shadow:0 9px 20px #625bf633}.wide{width:100%;margin-top:18px}
+.switch{text-align:center;color:var(--muted);font-size:13px;margin:18px 0 0}.switch button{border:0;background:none;color:var(--p);font-weight:800}
+.demo{font-size:11px;color:#999;text-align:center;margin-top:14px}
+.app{min-height:100svh;padding-bottom:76px}
+.topbar{position:sticky;top:0;z-index:10;background:#f7f7fcdd;backdrop-filter:blur(15px);padding:18px 17px 12px;display:flex;align-items:center;justify-content:space-between}
+.greet small{color:var(--muted)}.greet h2{margin:3px 0 0;font-size:21px}.avatar{width:42px;height:42px;border-radius:14px;background:#e9e8ff;color:#514ae5;display:grid;place-items:center;font-weight:900}
+main{padding:4px 16px 20px;max-width:720px;margin:auto}
+.balance{padding:23px;border-radius:24px;color:#fff;background:linear-gradient(135deg,#554ef0,#8078ff);box-shadow:0 18px 35px #625bf633;position:relative;overflow:hidden}
+.balance:after{content:"";position:absolute;width:180px;height:180px;border-radius:50%;right:-70px;top:-80px;background:#ffffff16}
+.balance small{opacity:.8}.balance h1{font-size:34px;margin:6px 0 17px;letter-spacing:-1px}.balanceRow{display:flex;justify-content:space-between;font-size:12px}.balanceRow b{font-size:14px}
+.quick{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0}.quick .card{padding:14px;text-align:center}.quick strong{display:block;font-size:18px;margin-top:5px}.quick span{font-size:10px;color:var(--muted)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:17px;box-shadow:var(--shadow)}
+.sectionhead{display:flex;align-items:center;justify-content:space-between;margin:22px 2px 11px}.sectionhead h3{margin:0;font-size:17px}.sectionhead button{border:0;background:none;color:var(--p);font-size:12px;font-weight:800}
+.tasks{display:grid;gap:11px}.task{display:flex;gap:12px;align-items:center}.taskicon{width:45px;height:45px;border-radius:14px;background:#f0efff;display:grid;place-items:center;font-size:20px;flex:none}.taskbody{flex:1;min-width:0}.taskbody b{font-size:14px}.taskbody p{font-size:11px;color:var(--muted);margin:4px 0 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.reward{color:var(--green);font-weight:900;font-size:13px;margin-bottom:6px}.smallbtn{padding:8px 10px;font-size:11px}.secondary{background:#f0eff7;color:#4c4e65}.done{color:var(--green);font-size:11px;font-weight:800}
+.progressbox{margin-top:14px}.progress{height:8px;background:#eeeeF5;border-radius:99px;overflow:hidden;margin:11px 0}.bar{height:100%;background:linear-gradient(90deg,var(--p),#9a92ff);border-radius:99px;transition:.5s}
+.notice{font-size:12px;color:var(--muted);line-height:1.5;background:#f7f7fb;border-radius:12px;padding:12px;margin-top:13px}
+.bottom{position:fixed;bottom:0;left:0;right:0;height:70px;background:#ffffffed;backdrop-filter:blur(16px);border-top:1px solid var(--line);display:flex;justify-content:center;z-index:20}
+.bottom nav{width:min(600px,100%);display:grid;grid-template-columns:repeat(4,1fr)}.bottom button{border:0;background:none;color:#9294a7;font-size:10px;font-weight:700}.bottom button span{display:block;font-size:21px;margin-bottom:3px}.bottom button.active{color:var(--p)}
+.page{animation:up .25s ease}@keyframes up{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.formcard h2{margin-top:0}.historyrow{display:flex;justify-content:space-between;gap:12px;padding:14px 0;border-bottom:1px solid var(--line);font-size:12px}.historyrow:last-child{border-bottom:0}.positive{color:var(--green);font-weight:900}.negative{color:var(--red);font-weight:900}.muted{color:var(--muted)}
+.profile{display:flex;align-items:center;gap:13px;padding:4px 0 18px}.bigavatar{width:58px;height:58px;border-radius:18px;background:#e8e7ff;color:#5049e3;display:grid;place-items:center;font-weight:900;font-size:22px}
+.setting{display:flex;align-items:center;justify-content:space-between;padding:15px 0;border-bottom:1px solid var(--line);font-size:13px}.setting:last-child{border:0}.setting button{border:0;background:#f1f1f7;color:#55586f;border-radius:9px;padding:8px 10px;font-size:11px;font-weight:700}
+.empty{text-align:center;padding:28px;color:var(--muted);font-size:13px}
+.toast{position:fixed;left:16px;right:16px;bottom:86px;background:#17182b;color:#fff;padding:13px 15px;border-radius:13px;text-align:center;font-size:12px;z-index:50;display:none}
+.taskModal{position:fixed;inset:0;background:#000b;z-index:60;display:grid;place-items:center;padding:18px}.taskModalBox{width:min(430px,100%);background:#0b1828;border:1px solid #244459;border-radius:22px;padding:22px;box-shadow:0 25px 70px #0009}.taskModalBox h2{margin:0 0 8px}.taskModalBox p,.taskModalBox li{color:#a8bbcf;font-size:13px;line-height:1.55}.taskModalBox ul{padding-left:20px}.taskModalActions{display:flex;gap:9px;margin-top:18px}.taskModalActions button{flex:1}.taskCheck{display:flex;align-items:flex-start;gap:9px;margin-top:15px;font-size:12px;color:#d8e6f2}.taskCheck input{width:18px;min-width:18px;margin:0;accent-color:#00d99a}
+@media(min-width:700px){.authbox{padding:35px}.quick{gap:14px}}
+
+/* PiggyEarn animation */
+.authpig{height:112px;display:grid;place-items:center;position:relative;margin:-4px 0 4px}.pig{position:relative;width:86px;height:62px;background:#ff9db3;border-radius:48% 52% 45% 48%;animation:pigFloat 2.5s ease-in-out infinite;box-shadow:inset -8px -7px 0 #f487a0}.pig:before{content:"";position:absolute;width:18px;height:14px;background:#ff7895;border-radius:60% 20% 60% 20%;left:-5px;top:7px;transform:rotate(-25deg)}.pig:after{content:"";position:absolute;width:22px;height:16px;border-radius:50%;background:#ef6e8b;right:-9px;top:25px;box-shadow:inset 5px 0 #df5f7b}.pigeye{position:absolute;width:7px;height:7px;border-radius:50%;background:#312131;right:22px;top:20px;box-shadow:-25px 0 #312131}.pigleg{position:absolute;width:12px;height:17px;background:#f487a0;border-radius:0 0 8px 8px;bottom:-9px}.pl1{left:17px}.pl2{right:17px}.coin{position:absolute;font-size:24px;animation:coinFloat 2.4s ease-in-out infinite}.coin1{left:18%;top:20%}.coin2{right:17%;top:43%;animation-delay:.7s}.coin3{right:26%;top:3%;animation-delay:1.1s}@keyframes pigFloat{50%{transform:translateY(-7px) rotate(2deg)}}@keyframes coinFloat{50%{transform:translateY(-12px) rotate(10deg);opacity:.7}}
+button:disabled{opacity:.7;cursor:wait}
+
+/* PiggyEarn dark trading-inspired redesign */
+:root{--p:#00d99a;--p2:#00f0b0;--ink:#f3f7ff;--muted:#8da1b8;--bg:#050d18;--card:#0b1828;--line:#183047;--green:#00e5a0;--red:#ff657a;--shadow:0 12px 32px #0005}
+body{background:radial-gradient(ellipse at 50% -20%,#102b42 0%,#050d18 52%);color:var(--ink)}
+.auth{background:radial-gradient(ellipse at 50% 10%,#12364a,#050d18 65%);padding:18px}
+.authbox{background:linear-gradient(160deg,#0c1c2d,#07111e);border:1px solid #1b3a51;border-radius:28px;color:var(--ink);box-shadow:0 24px 70px #0008}
+.logo span{color:#00e5a0}.authhero p{color:#9db0c5}.authhero h1{letter-spacing:-.8px}
+label{color:#d8e4f2}input,select{background:#071423;border:1px solid #1c354c;color:#f4f8ff}
+input::placeholder{color:#6f849a}input:focus{border-color:#00d99a;box-shadow:0 0 0 4px #00d99a18}
+.primary{background:linear-gradient(110deg,#00c98c,#00efae);color:#03150f;box-shadow:0 8px 24px #00d99a22}
+.switch{color:#91a5ba}.switch button,.sectionhead button{color:#00e5a0}.demo{color:#71879d}
+.topbar{background:#06111fe8;border-bottom:1px solid #142a3e}
+.greet small,.muted{color:#8da1b8}.greet h2{color:#f3f7ff}
+.avatar,.bigavatar{background:linear-gradient(145deg,#123d45,#0c2537);border:1px solid #17604f;color:#00e5a0}
+main{max-width:760px}.balance{background:linear-gradient(135deg,#0d2b3a,#0b1b2c 70%);border:1px solid #1d4b55;box-shadow:0 15px 38px #0004;padding:21px}
+.balance:after{background:#00e5a00a}.balance h1{font-size:37px}.balanceTop{display:flex;justify-content:space-between;align-items:center}.livepill{font-size:9px;color:#00e5a0;background:#00e5a015;border:1px solid #00e5a044;padding:5px 8px;border-radius:30px}.livepill i{display:inline-block;width:6px;height:6px;border-radius:50%;background:#00e5a0;margin-right:4px;box-shadow:0 0 8px #00e5a0}
+.chartline{height:85px;position:relative;margin-top:18px;border-top:1px solid #ffffff0c;padding-top:8px}.chartline svg{width:100%;height:62px;overflow:visible}.chartline>span{position:absolute;left:0;bottom:0;color:#00e5a0;font-size:10px}.mascotMini{position:absolute;right:8px;bottom:0;font-size:32px;filter:drop-shadow(0 4px 10px #ff6d9b55);animation:pigFloat 2.2s ease-in-out infinite}.mascotMini b{font-size:15px;position:absolute;right:-9px;top:-8px;animation:coinFloat 2s ease-in-out infinite}
+.card{background:linear-gradient(145deg,#0c1b2b,#091523);border:1px solid #183047;box-shadow:0 10px 28px #0002}
+.quick .card{padding:14px 9px}.quick span{color:#8da1b8}.quick strong{color:#f3f7ff}
+.sectionhead h3{color:#f0f6ff}.taskicon{background:#102a39;border:1px solid #1d4052}.taskbody p{color:#8da1b8}.reward{color:#00e5a0}.secondary{background:#13283a;color:#c4d5e5}
+.progress{background:#15283a}.bar{background:linear-gradient(90deg,#00c98c,#00f0b0);box-shadow:0 0 12px #00e5a055}
+.notice{background:#0b1b2a;color:#8da1b8;border:1px solid #183047}
+.bottom{background:#06111ff2;border-top:1px solid #173047}.bottom button{color:#71879d}.bottom button.active{color:#00e5a0}
+.historyrow{border-color:#183047}.positive{color:#00e5a0}.negative{color:#ff657a}
+.setting{border-color:#183047}.setting button{background:#13283a;color:#c4d5e5}
+.toast{background:#10263a;border:1px solid #24516a;color:#f4f8ff;box-shadow:0 10px 30px #0008}
+.pig{filter:drop-shadow(0 10px 14px #ff719b35)}.authpig{height:125px}
+@media(min-width:700px){.authbox{max-width:470px}.balance{padding:25px}}
+
+
+.password-wrap{position:relative;display:flex;align-items:center;width:100%}
+.password-wrap input{width:100%;padding-right:68px}
+.password-wrap .show-password{position:absolute;right:10px;top:50%;transform:translateY(-50%);border:1px solid #24465a;border-radius:9px;background:#102438;color:#00e5a0;font-size:12px;font-weight:800;padding:7px 9px;cursor:pointer}
+.password-wrap .show-password:focus-visible{outline:2px solid #00e5a0;outline-offset:2px}
+
+
+/* PiggyEarn Banking UI refresh — inspired by the approved reference */
+:root{--p:#00d7a0;--p2:#00f0b2;--ink:#f3f8ff;--muted:#8fa7bf;--bg:#04101f;--card:#0a1b30;--line:#193653;--green:#00e5a0;--red:#ff7185;--shadow:0 14px 36px #0005}
+html{background:#04101f}
+body{background:radial-gradient(ellipse at 50% -10%,#123252 0%,#061324 42%,#04101f 100%);color:var(--ink)}
+.auth{background:radial-gradient(ellipse at 50% 5%,#123957 0%,#061324 48%,#04101f 100%);padding:20px;position:relative;overflow:hidden}
+.auth:before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.14;background-image:linear-gradient(#4d88aa22 1px,transparent 1px),linear-gradient(90deg,#4d88aa22 1px,transparent 1px);background-size:30px 30px}
+.authbox{position:relative;width:min(440px,100%);background:linear-gradient(155deg,#0b2037f5,#061321f8);border:1px solid #214968;border-radius:28px;padding:26px 22px;box-shadow:0 26px 75px #0009;color:#f3f8ff}
+.logo{font-size:27px;letter-spacing:-1.1px;color:#f5f8ff}.logo span{color:#00e5a0}
+.authhero{padding:13px 0 20px}.authhero h1{font-size:30px;letter-spacing:-.8px;line-height:1.12;color:#f4f8ff}.authhero p{color:#9bb0c6;line-height:1.55}
+label{color:#d8e7f5;font-size:12px;letter-spacing:.1px}
+input,select{background:#07182a;border:1px solid #1c3a56;color:#f4f8ff;border-radius:13px;padding:14px}
+input::placeholder{color:#6e879f}input:focus{border-color:#00d7a0;box-shadow:0 0 0 4px #00d7a018}
+.primary{background:linear-gradient(110deg,#00c98e,#00efb1);color:#032016;box-shadow:0 8px 24px #00d7a022;border-radius:14px}
+.switch{color:#8fa7bf}.switch button{color:#00e5a0}.demo{color:#718aa3}
+.authpig{filter:drop-shadow(0 12px 22px #ff619933);transform:scale(1.03);margin-top:2px;margin-bottom:5px}
+.pig{animation:pigFloat 2.3s ease-in-out infinite;filter:drop-shadow(0 5px 9px #ff6d9b55)}
+.coin{animation:coinFloat 2s ease-in-out infinite}
+@keyframes pigFloat{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-8px) rotate(2deg)}}
+@keyframes coinFloat{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-7px) rotate(12deg)}}
+.app{background:transparent;padding-bottom:82px}
+.topbar{background:#061324eF;border-bottom:1px solid #183550;padding:17px 17px 13px;backdrop-filter:blur(18px)}
+.greet small{color:#8fa7bf}.greet h2{color:#f4f8ff}.avatar{background:linear-gradient(145deg,#123c4a,#0a2537);border:1px solid #1e5a59;color:#00e5a0;border-radius:50%;box-shadow:0 0 0 4px #00e5a00c}
+main{max-width:740px;padding:10px 15px 24px}
+.balance{padding:21px 20px 16px;border-radius:23px;background:linear-gradient(135deg,#0b574f 0%,#0b3041 48%,#0b1b31 100%);border:1px solid #1d665e;box-shadow:0 18px 38px #0004;position:relative;overflow:hidden}
+.balance:after{width:220px;height:220px;right:-85px;top:-105px;background:#00e5a010;border:1px solid #00e5a018}
+.balanceTop{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.balanceTop small{font-size:10px;letter-spacing:1px;color:#c1dedb}
+.livepill{font-size:9px;color:#00f0b2;background:#00e5a018;border:1px solid #00e5a044;padding:5px 8px;border-radius:30px;white-space:nowrap}
+.livepill i{display:inline-block;width:6px;height:6px;border-radius:50%;background:#00e5a0;margin-right:4px;box-shadow:0 0 8px #00e5a0}
+.balance h1{font-size:35px;letter-spacing:-1.2px;margin:9px 0 15px}
+.balanceRow{position:relative;z-index:1;color:#b4c9d8}.balanceRow b{display:block;color:#f7fbff;margin-top:4px}
+.chartline{height:90px;position:relative;margin-top:14px;border-top:1px solid #ffffff13;padding-top:8px}
+.chartline svg{width:100%;height:62px;overflow:visible}
+.chartline>span{position:absolute;left:0;bottom:0;color:#00e5a0;font-size:10px}
+.mascotMini{position:absolute;right:9px;bottom:0;font-size:32px;filter:drop-shadow(0 4px 10px #ff719b55);animation:pigFloat 2.2s ease-in-out infinite}
+.mascotMini b{font-size:15px;position:absolute;right:-9px;top:-8px;animation:coinFloat 2s ease-in-out infinite}
+.quick{gap:10px;margin:13px 0}.quick .card{padding:14px 8px;text-align:center}
+.card{background:linear-gradient(145deg,#0b1e32,#081727);border:1px solid #183650;border-radius:18px;box-shadow:0 10px 28px #0002;color:#f3f8ff}
+.quick span{color:#8fa7bf}.quick strong{color:#f3f8ff}
+.sectionhead{margin:22px 2px 11px}.sectionhead h3{color:#f1f7ff}.sectionhead button{color:#00e5a0}
+.taskicon{background:#102d43;border:1px solid #1c455b;color:#f3f8ff}
+.taskbody b{color:#eff6ff}.taskbody p{color:#8fa7bf}.reward,.done{color:#00e5a0}
+.secondary{background:#132d43;color:#c7d9e9;border:1px solid #1b3b54}
+.progress{background:#152c42}.bar{background:linear-gradient(90deg,#00c98e,#00f0b2);box-shadow:0 0 12px #00e5a044}
+.notice{background:#0a1b2c;border:1px solid #1b354c;color:#9ab0c5}
+.bottom{background:#04111ff2;border-top:1px solid #183550;backdrop-filter:blur(18px);height:74px}
+.bottom nav{width:min(620px,100%)}.bottom button{color:#7089a3}.bottom button.active{color:#00e5a0}
+.historyrow,.setting{border-color:#183650}.positive{color:#00e5a0}.negative{color:#ff7185}
+.setting button{background:#10283d;color:#d5e4f2}
+.toast{background:#10263a;border:1px solid #24516a;color:#f4f8ff;box-shadow:0 10px 30px #0008}
+.password-wrap .show-password{background:#10283d;border-color:#24465a;color:#00e5a0}
+@media(min-width:760px){.authbox{padding:30px 26px}.balance{padding:24px 24px 17px}.card{border-radius:20px}}
+
+
+.gameTabs{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:0 0 12px}
+.gameTab{border:1px solid #1a3b55;border-radius:13px;padding:12px;background:#0b2034;color:#a8bfd2;font-weight:800}
+.gameTab.active{background:linear-gradient(110deg,#00c98e,#00efb1);color:#032016;border-color:transparent}
+.gamePanel{padding:14px;margin-bottom:16px}
+.gameHead{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+.gameHead b{font-size:15px}.gameHead p{margin:4px 0 0;font-size:11px}
+.chessStatus{background:#0a2a3a;border:1px solid #1c4a59;border-radius:10px;padding:10px;font-size:12px;color:#00e5a0;margin-bottom:10px;text-align:center}.chessPlayers{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:10px}.chessPlayer{border:1px solid #24445a;border-radius:11px;padding:10px;background:#0b2034;color:#dceaf4}.chessPlayer.active{border-color:#00e5a0;box-shadow:inset 0 0 0 1px #00e5a0;background:#10352f}.chessPlayer strong{display:block;font-size:12px}.chessPlayer span{display:block;color:#9bb2c6;font-size:11px;margin-top:4px}.chessPlayer .chessWins{color:#00e5a0;font-weight:800}
+.chessBoard{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));width:min(100%,430px);aspect-ratio:1;margin:0 auto;border:3px solid #21455c;border-radius:8px;overflow:hidden}
+.chessSquare{display:grid;place-items:center;aspect-ratio:1;border:0;padding:0;font-size:clamp(22px,6vw,38px);line-height:1;cursor:pointer;user-select:none}
+.chessSquare.light{background:#d8e5e5}.chessSquare.dark{background:#507c84}
+.chessSquare.selected{box-shadow:inset 0 0 0 4px #00e5a0;background:#8dbf9e}
+.chessSquare.hint{box-shadow:inset 0 0 0 4px #e5d46c}
+.chessSquare .whitePiece{color:#fff;text-shadow:0 2px 2px #193342,0 0 2px #193342}
+.chessSquare .blackPiece{color:#102433;text-shadow:0 1px 0 #c3d3d4}
+.gameLegend{display:flex;justify-content:space-between;gap:5px;font-size:10px;color:#8fa7bf;margin-top:10px;flex-wrap:wrap}
+.airScore{display:flex;align-items:center;justify-content:space-between;font-size:12px;color:#d9e8f5;margin-bottom:10px}
+.airScore span{color:#00e5a0}
+#airCanvas{display:block;width:100%;max-width:360px;height:auto;aspect-ratio:3/4;margin:0 auto;border:1px solid #214663;border-radius:14px;background:#06182b;touch-action:pan-y}
+.airControls{display:grid;grid-template-columns:1fr 2fr 1fr;gap:8px;margin-top:12px}
+.airControls button{border:1px solid #1b425a;border-radius:12px;padding:12px;background:#102b42;color:#00e5a0;font-weight:900}
+.airControls .fireBtn{background:linear-gradient(110deg,#00c98e,#00efb1);color:#032016;border:0}
+@media(max-width:380px){.gamePanel{padding:10px}.gameHead b{font-size:13px}.chessSquare{font-size:21px}}
+
+
+/* Visual separation: task cards use a blue action theme; earnings use a green money theme */
+#tasks .notice{border-color:#28516e;background:linear-gradient(120deg,#0b2034,#0a1727);border-left:3px solid #4da8ff}
+.tasks .task{background:linear-gradient(120deg,#102940 0%,#0a1a2b 75%);border:1px solid #244965;border-left:4px solid #4da8ff;border-radius:16px;padding:13px;box-shadow:0 8px 20px #0002;transition:border-color .18s,transform .18s}
+.tasks .taskicon{background:linear-gradient(145deg,#183e5b,#102a42);border:1px solid #326487;border-radius:13px}
+.tasks .taskbody b{display:block;color:#f1f7ff;font-size:13px}
+.tasks .taskbody p{white-space:normal;line-height:1.35}
+.tasks .reward{display:inline-block;background:#382f17;color:#ffd66b;border:1px solid #705a24;border-radius:9px;padding:5px 7px;font-size:12px;margin-bottom:7px;white-space:nowrap}
+.tasks .smallbtn{min-width:61px}
+.tasks .done{display:inline-block;background:#103a32;border:1px solid #1b7058;border-radius:8px;padding:5px 7px}
+@media(hover:hover) and (pointer:fine){.tasks .task:hover{border-color:#4da8ff;transform:translateY(-1px)}}
+/* Earnings summary is deliberately distinct from task cards */
+#home .balance{background:radial-gradient(circle at 100% 0%,#1b755c 0%,transparent 42%),linear-gradient(135deg,#073d35 0%,#0a2d35 54%,#0b1b2c 100%);border:1px solid #25896b;box-shadow:0 16px 38px #00d99a12}
+#home .balanceTop small{color:#a5e8d1;letter-spacing:1.15px}
+#home .balance h1{color:#e6fff5;text-shadow:0 3px 18px #00e5a018}
+#home .balanceRow b{color:#d6ffef}
+#home .quick .card{background:linear-gradient(145deg,#0d2b2a,#0a1b29);border-color:#205344}
+#home .quick .card:first-child{border-top:2px solid #00e5a0}
+#home .quick .card:nth-child(2){border-top:2px solid #ffd166}
+#home .quick .card:nth-child(3){border-top:2px solid #5aa9ff}
+#home .quick .card:first-child strong{color:#00e5a0}
+#home .progressbox{background:linear-gradient(120deg,#0c2928,#0a1b2b);border-color:#205344}
+#home .progressbox>b{color:#c7ffeb}
+#home .progressbox .bar{background:linear-gradient(90deg,#00a878,#00f0b2)}
+#home .sectionhead h3{letter-spacing:-.2px}
+
+</style>
+</head>
+<body>
+
+<div id="auth" class="auth">
+ <div class="authbox">
+  <div class="logo">🐷 Piggy<span>Earn</span></div>
+  <div class="authpig"><span class="coin coin1">🪙</span><span class="coin coin2">🪙</span><span class="coin coin3">✨</span><div class="pig"><i class="pigeye"></i><i class="pigleg pl1"></i><i class="pigleg pl2"></i></div></div>
+  <div class="authhero">
+   <div id="authBadge" style="color:#00e5a0;font-size:12px;font-weight:800;letter-spacing:1.5px">YOUR TIME. YOUR REWARDS.</div>
+   <h1 id="authTitle">Start earning from simple tasks.</h1>
+   <p id="authSub">Create your free account and complete tasks at your own pace.</p>
+  </div>
+  <div id="signupForm">
+   <label>Full name</label><input id="name" placeholder="Your name" autocomplete="name">
+   <label>Email</label><input id="email" type="email" placeholder="you@example.com" autocomplete="email">
+   <label>Password</label>
+   <div class="password-wrap">
+    <input id="password" type="password" placeholder="At least 6 characters" autocomplete="new-password">
+    <button class="show-password" type="button" onclick="togglePasswordVisibility('password', this)" aria-label="Show password" aria-pressed="false">Show</button>
+   </div>
+   <button class="btn primary wide" onclick="signup()">Create account</button>
+   <div class="switch">Already have an account? <button onclick="toggleAuth()">Log in</button></div>
+  </div>
+  <div id="loginForm" class="hidden">
+   <label>Email</label><input id="loginEmail" type="email" placeholder="you@example.com">
+   <label>Password</label><input id="loginPassword" type="password" placeholder="Your password">
+   <button class="btn primary wide" onclick="login()">Log in</button>
+   <div class="switch">New to PiggyEarn? <button onclick="toggleAuth()">Create account</button></div>
+  </div>
+  <button class="btn secondary wide" type="button" onclick="openAdmin()">🔐 Owner / Admin dashboard</button>
+  <div class="demo">Offline demo account • Data stays in this browser</div>
+ </div>
+</div>
+
+<div id="adminApp" class="app hidden">
+ <header class="topbar"><div class="greet"><small>PIGGYEARN · LOCAL DEMO</small><h2>Owner dashboard</h2></div><button class="btn secondary smallbtn" onclick="closeAdmin()">← Back</button></header>
+ <main>
+  <div class="notice" style="margin:10px 0 16px"><b>Demo limitation:</b> this dashboard can only see demo accounts and simulated deposit records saved in this same browser. It cannot see activity from other people's phones or collect real payments. The demo PIN is not secure authentication.</div>
+  <div class="quick"><div class="card"><span>Demo accounts</span><strong id="adminUsers">0</strong></div><div class="card"><span>Simulated deposits</span><strong id="adminDeposits">0</strong></div><div class="card"><span>Simulated value</span><strong id="adminValue">₦0</strong></div></div>
+  <div class="sectionhead"><h3>Deposit activity</h3><button onclick="renderAdmin()">Refresh</button></div>
+  <div class="card" id="adminDepositRows"><div class="empty">No simulated deposit activity yet.</div></div>
+  <div class="sectionhead"><h3>Demo accounts</h3></div>
+  <div class="card" id="adminAccountRows"><div class="empty">No demo accounts found in this browser.</div></div>
+  <button class="btn secondary wide" onclick="closeAdmin()">Return to PiggyEarn</button>
+ </main>
+</div>
+
+<div id="app" class="app hidden">
+ <header class="topbar">
+  <div class="greet"><small id="dateText"></small><h2 id="hello">Hi 👋</h2></div>
+  <div class="avatar" id="avatar">U</div>
+ </header>
+ <main>
+  <section id="home" class="page">
+   <div class="balance"><div class="balanceTop"><small>PORTFOLIO VALUE · DEMO</small><span class="livepill"><i></i> LIVE</span></div><h1 id="balance">₦0</h1><div class="balanceRow"><span>Total earned <b id="totalEarned">₦0</b></span><span>Tasks done <b id="completedCount">0</b></span></div><div class="chartline" aria-label="Decorative earnings chart"><svg viewBox="0 0 320 64" preserveAspectRatio="none"><defs><linearGradient id="chartFill" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#00e5a0" stop-opacity=".3"/><stop offset="1" stop-color="#00e5a0" stop-opacity="0"/></linearGradient></defs><path d="M0 52 C22 47 25 24 48 35 S79 53 98 31 S130 45 150 25 S178 38 198 17 S226 32 245 15 S280 26 320 4 L320 64 L0 64 Z" fill="url(#chartFill)"/><path d="M0 52 C22 47 25 24 48 35 S79 53 98 31 S130 45 150 25 S178 38 198 17 S226 32 245 15 S280 26 320 4" fill="none" stroke="#00e5a0" stroke-width="2.5" stroke-linecap="round"/></svg><span>↗ Your rewards are growing</span><div class="mascotMini" aria-label="Animated pig mascot">🐷<b>🪙</b></div></div></div>
+   <div class="quick">
+    <div class="card"><span>Today</span><strong id="todayEarned">₦0</strong></div>
+    <div class="card"><span>Tasks</span><strong id="todayTasks">0/5</strong></div>
+    <div class="card"><span>Streak</span><strong>🔥 <span id="streak">1</span></strong></div>
+   </div>
+   <div class="card progressbox"><b>Daily goal</b><div class="progress"><div id="progressBar" class="bar"></div></div><small class="muted" id="progressText">0 of 5 tasks completed</small></div>
+   <div class="sectionhead"><h3>Recommended tasks</h3><button onclick="show('tasks')">See all</button></div>
+   <div id="dashboardTasks" class="tasks"></div>
+  </section>
+
+  <section id="tasks" class="page hidden"><div class="sectionhead"><h3>All tasks</h3></div><div class="notice" style="margin-bottom:12px">*These are sample tasks. Rewards shown are simulated demo points, not real money. A production version needs real task partners and server-side verification.</div><div id="allTasks" class="tasks"></div></section>
+
+  <section id="withdraw" class="page hidden">
+   <div class="card formcard" style="margin-bottom:14px"><h2>🧪 Demo deposit test</h2><p class="muted" style="font-size:12px;line-height:1.6">Test how a ₦500 deposit step would look. This button only simulates a deposit in this browser. <b>No money is collected or transferred.</b></p><div class="setting"><span>Test amount</span><b>₦500 (SIMULATED)</b></div><div class="setting"><span>Demo deposit status</span><b id="demoDepositStatus">Not completed</b></div><button class="btn primary wide" id="demoDepositBtn" onclick="simulateDeposit()">Simulate ₦500 deposit</button><p style="font-size:10px;color:var(--muted);margin-bottom:0">Do not send real money to anyone for this demo. A real payment feature would need a verified payment provider.</p></div>
+   <div class="card formcard"><h2>Withdraw earnings · DEMO</h2><p class="muted" style="font-size:12px">Available demo balance: <b id="wBalance">₦0</b></p>
+    <label>Amount</label><input id="amount" type="number" min="100" placeholder="Minimum ₦100">
+    <label>Method</label><select id="method"><option>Demo Bank Transfer</option><option>Demo Wallet</option></select>
+    <label>Account / wallet reference</label><input id="account" placeholder="e.g. DEMO-12345">
+    <button class="btn primary wide" onclick="withdraw()">Request withdrawal</button>
+    <div class="notice">This is a simulated withdrawal only. For this prototype, the form is enabled after you click “Simulate ₦500 deposit” above. That action does not charge you or add real money. No real payment is sent.</div>
+   </div>
+   <div class="sectionhead"><h3>Withdrawal info</h3></div>
+   <div class="card" style="font-size:13px;line-height:1.7;color:var(--muted)">Minimum demo withdrawal: <b>₦100</b><br>Processing status: <b>Demo / Pending</b><br>Payment provider: <b>Not connected</b><br>Demo deposit step: <b>₦500 simulated only</b><br><small>This is a UI test, not a real financial transaction. Never pay an upfront deposit to release real earnings.</small></div>
+  </section>
+
+  <section id="history" class="page hidden"><div class="sectionhead"><h3>Activity</h3></div><div class="card" id="historyWrap"></div></section>
+
+
+  <section id="games" class="page hidden">
+   <div class="sectionhead"><h3>🎮 PiggyPlay Arcade</h3><span class="muted" style="font-size:11px">Play for fun</span></div>
+   <div class="notice" style="margin-bottom:14px">Play chess or fly through the sky in the aircraft game. These mini-games are for entertainment and do not affect your PiggyEarn balance.</div>
+   <div class="gameTabs">
+    <button class="gameTab active" onclick="chooseGame('chess',this)">♟️ Chess</button>
+    <button class="gameTab" onclick="chooseGame('aircraft',this)">✈️ Aircraft</button>
+   </div>
+   <div id="chessGame" class="card gamePanel">
+    <div class="gameHead"><div><b>♟ Piggy Chess · Player vs Computer</b><p class="muted">You play White · Computer plays Black</p></div><button class="btn secondary smallbtn" onclick="resetChess()">New game</button></div>
+    <div class="chessPlayers"><div class="chessPlayer active" id="chessPlayer1"><strong>⚪ PLAYER 1</strong><span>White pieces</span><span class="chessWins" id="chessWins1">Wins: 0</span></div><div class="chessPlayer" id="chessPlayer2"><strong>🤖 COMPUTER</strong><span>Black pieces · AI opponent</span><span class="chessWins" id="chessWins2">Wins: 0</span></div></div>
+    <div class="chessStatus" id="chessStatus" aria-live="polite">Player 1 (White) to move · Tap a piece, then a square</div>
+    <div id="chessBoard" class="chessBoard" aria-label="Chess board"></div>
+    <div class="gameLegend"><span>♙ White</span><span>♟ Black</span><span>Tap piece → destination</span></div>
+    <div class="chessStatus" style="margin-top:10px;margin-bottom:0;text-align:left"><b>Captured pieces</b><div style="margin-top:6px">You: <span id="playerCaptures">None yet</span></div><div style="margin-top:4px">Computer: <span id="computerCaptures">None yet</span></div></div>
+   </div>
+   <div id="aircraftGame" class="card gamePanel hidden">
+    <div class="gameHead"><div><b>🚀 Piggy Orbital Mission</b><p class="muted">Pilot a reusable rocket through orbit</p></div><button class="btn secondary smallbtn" onclick="startAircraft()">Restart</button></div>
+    <div class="airScore">⭐ Score: <b id="airScore">0</b> <span id="airState">Ready to fly</span></div>
+    <canvas id="airCanvas" width="360" height="480" aria-label="Aircraft game"></canvas>
+    <div class="airControls"><button onclick="movePlane(-1)" aria-label="Move left">◀</button><button class="fireBtn" onclick="startAircraft()">▶ Fly / Restart</button><button onclick="movePlane(1)" aria-label="Move right">▶</button></div>
+    <p class="muted" style="font-size:11px;text-align:center">Steer with the controls or ← → keys. Avoid meteors and collect energy cells.</p>
+   </div>
+  </section>
+
+  <section id="profile" class="page hidden">
+   <div class="card">
+    <div class="profile"><div class="bigavatar" id="bigAvatar">U</div><div><b id="profileName">User</b><div class="muted" id="profileEmail" style="font-size:12px"></div></div></div>
+    <div class="setting"><span>Account type</span><b style="font-size:11px">FREE</b></div>
+    <div class="setting"><span>Storage</span><b style="font-size:11px;color:var(--green)">This browser</b></div>
+    <div class="setting"><span>Demo data</span><button onclick="resetDemo()">Reset</button></div>
+    <div class="setting"><span>Session</span><button onclick="logout()">Log out</button></div>
+   </div>
+   <div class="notice">PiggyEarn is currently a front-end prototype. A real production earning platform would need a secure backend, authentication, task verification, fraud controls and a regulated payment provider.</div>
+  </section>
+ </main>
+</div>
+
+<div id="bottom" class="bottom hidden"><nav>
+ <button data-page="home" onclick="show('home')"><span>⌂</span>Home</button>
+ <button data-page="tasks" onclick="show('tasks')"><span>✓</span>Tasks</button>
+ <button data-page="games" onclick="show('games')"><span>🎮</span>Games</button>
+ <button data-page="withdraw" onclick="show('withdraw')"><span>₦</span>Withdraw</button>
+ <button data-page="profile" onclick="show('profile')"><span>◉</span>Profile</button>
+</nav></div>
+<div id="taskModal" class="taskModal hidden" role="dialog" aria-modal="true" aria-labelledby="taskModalTitle">
+ <div class="taskModalBox"><div class="livepill" style="display:inline-block">DEMO TASK</div><h2 id="taskModalTitle">Task details</h2><p id="taskModalDesc"></p><ul><li>Read the task instructions carefully.</li><li>Complete the activity honestly.</li><li>Demo rewards are simulated and have no cash value.</li></ul><label class="taskCheck"><input id="taskConfirm" type="checkbox"><span>I completed this demo activity and understand the reward is simulated.</span></label><div class="taskModalActions"><button class="btn secondary" onclick="closeTaskModal()">Cancel</button><button id="taskSubmitBtn" class="btn primary" onclick="completeTask()" disabled>Complete demo task</button></div><p style="font-size:10px;margin-bottom:0">This prototype does not verify tasks with a task provider. Real rewards require secure server-side verification.</p></div>
+</div>
+<div id="toast" class="toast"></div>
+
+<script>
+// Offline demo build: runs directly from a downloaded HTML file; no Firebase/network setup required.
+const tasks=[{id:1,icon:"🧠",title:"Brain Teaser",desc:"Solve a short logic puzzle",reward:180},{id:2,icon:"⌨️",title:"Typing Sprint",desc:"Practise typing a short sentence",reward:120},{id:3,icon:"🔢",title:"Math Challenge",desc:"Try a few everyday maths questions",reward:200},{id:4,icon:"🌍",title:"General Knowledge",desc:"Answer questions about the world",reward:160},{id:5,icon:"🛡️",title:"Digital Safety Check",desc:"Review tips for staying safe online",reward:150},{id:6,icon:"🧩",title:"Memory Match",desc:"Complete a short memory activity",reward:220},{id:7,icon:"💡",title:"Creative Idea",desc:"Think of a helpful idea for a sample app",reward:250},{id:8,icon:"📋",title:"Quick Feedback",desc:"Share feedback on a sample feature",reward:170}];
+let user=null,data={balance:0,total:0,completed:[],history:[],streak:1};const $=id=>document.getElementById(id),money=n=>"₦"+Number(n||0).toLocaleString("en-NG");
+const read=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))??d}catch(e){return d}},write=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
+function toast(x){const e=$("toast");e.textContent=x;e.style.display="block";clearTimeout(window.tt);window.tt=setTimeout(()=>e.style.display="none",2800)}
+function saveData(){if(user)write('piggy_data_'+user.email,data)}
+window.toggleAuth=()=>{$("signupForm").classList.toggle("hidden");$("loginForm").classList.toggle("hidden");const login=!$("loginForm").classList.contains("hidden");$("authTitle").textContent=login?"Welcome back.":"Complete tasks. Grow your piggy.";$('authSub').textContent=login?"Log in to continue to your PiggyEarn dashboard.":"Create an account and start earning demo rewards from simple tasks."};
+window.togglePasswordVisibility=(inputId,button)=>{const field=$(inputId);if(!field)return;const show=field.type==='password';field.type=show?'text':'password';button.textContent=show?'Hide':'Show';button.setAttribute('aria-label',show?'Hide password':'Show password');button.setAttribute('aria-pressed',show?'true':'false')};
+function openApp(){$("auth").classList.add("hidden");$("adminApp").classList.add("hidden");$("app").classList.remove("hidden");$("bottom").classList.remove("hidden");show('home')}
+function enterAccount(account){user={name:account.name,email:account.email};data=read('piggy_data_'+user.email,{balance:0,total:0,completed:[],history:[],streak:1,demoDepositDone:false});data.completed=data.completed||[];data.history=data.history||[];data.demoDepositDone=Boolean(data.demoDepositDone);render();openApp()}
+window.signup=async()=>{const n=$("name").value.trim(),e=$("email").value.trim().toLowerCase(),p=$("password").value;if(!n||!e||p.length<6)return toast("Enter your name, a valid email and a 6+ character password.");if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e))return toast('Enter a valid email address.');const btn=document.querySelector('#signupForm button');btn.disabled=true;try{const accounts=read('piggy_accounts',{});if(accounts[e])return toast('That email already has a demo account. Please log in.');accounts[e]={name:n,password:p};write('piggy_accounts',accounts);write('piggy_data_'+e,{balance:0,total:0,completed:[],history:[],streak:1,demoDepositDone:false});enterAccount(accounts[e]);toast('Demo account created!')}catch(err){toast('Could not save in this browser. Check storage settings.')}finally{btn.disabled=false}};
+window.login=async()=>{const e=$("loginEmail").value.trim().toLowerCase(),p=$("loginPassword").value;if(!e||!p)return toast('Enter your email and password.');const account=read('piggy_accounts',{})[e];if(!account||account.password!==p)return toast('Demo account not found or password is incorrect.');enterAccount({...account,email:e});toast('Logged in successfully!')};
+window.logout=()=>{user=null;data={balance:0,total:0,completed:[],history:[],streak:1};$('app').classList.add('hidden');$('adminApp').classList.add('hidden');$('bottom').classList.add('hidden');$('auth').classList.remove('hidden');$('loginForm').classList.add('hidden');$('signupForm').classList.remove('hidden');toast('Logged out.')};
+window.show=page=>{document.querySelectorAll('.page').forEach(x=>x.classList.add('hidden'));if($(page))$(page).classList.remove('hidden');document.querySelectorAll('.bottom button').forEach(x=>x.classList.toggle('active',x.dataset.page===page));render();window.scrollTo({top:0,behavior:'smooth'})};
+let selectedTaskId=null;window.closeTaskModal=()=>{$('taskModal').classList.add('hidden');selectedTaskId=null;$('taskConfirm').checked=false;$('taskSubmitBtn').disabled=true};$('taskConfirm').addEventListener('change',()=>{$('taskSubmitBtn').disabled=!$('taskConfirm').checked});
+function taskCard(t){const done=data.completed.includes(t.id);return `<div class="card task"><div class="taskicon">${t.icon}</div><div class="taskbody"><b>${t.title}</b><p>${t.desc} · demo activity</p></div><div style="text-align:right"><div class="reward">+${money(t.reward)}*</div>${done?'<span class="done">✓ Done</span>':`<button class="btn primary smallbtn" onclick="startTask(${t.id})">Start</button>`}</div></div>`}
+window.startTask=id=>{const t=tasks.find(x=>x.id===id);if(!t||data.completed.includes(id))return;selectedTaskId=id;$('taskModalTitle').textContent=t.title;$('taskModalDesc').textContent=t.desc+'. This is a sample activity inside the PiggyEarn prototype.';$('taskConfirm').checked=false;$('taskSubmitBtn').disabled=true;$('taskModal').classList.remove('hidden')};
+window.completeTask=async()=>{const t=tasks.find(x=>x.id===selectedTaskId);if(!user||!t||data.completed.includes(t.id)||!$('taskConfirm').checked)return;const btn=$('taskSubmitBtn');btn.disabled=true;btn.textContent='Saving…';data.completed.push(t.id);data.balance+=t.reward;data.total+=t.reward;data.history.unshift({type:'Demo: '+t.title,amount:t.reward,date:new Date().toLocaleString(),simulated:true});saveData();render();closeTaskModal();btn.textContent='Complete demo task';toast(`Demo reward of ${money(t.reward)} added. No cash value.`)};
+window.simulateDeposit=()=>{if(!user)return toast('Log in to test the demo.');if(data.demoDepositDone)return toast('The simulated ₦500 deposit is already completed.');data.demoDepositDone=true;data.history.unshift({type:'SIMULATED deposit step (₦500)',amount:0,date:new Date().toLocaleString(),status:'demo',simulated:true});saveData();render();toast('Demo only: ₦500 deposit step completed. No money was taken.')};
+window.withdraw=async()=>{if(!data.demoDepositDone)return toast('For this UI demo, first click “Simulate ₦500 deposit”. No real money is needed.');const a=Number($('amount').value),ref=$('account').value.trim(),method=$('method').value;if(a<100)return toast('Minimum demo withdrawal is ₦100.');if(a>data.balance)return toast('Your balance is too low.');if(!ref)return toast('Enter a demo account or wallet reference.');data.balance-=a;data.history.unshift({type:'Demo withdrawal request ('+method+')',amount:-a,date:new Date().toLocaleString(),status:'pending',reference:ref});saveData();render();$('amount').value='';$('account').value='';toast('Demo withdrawal request recorded. No payment was sent.')};
+window.resetDemo=()=>{if(!confirm('Reset your demo earnings and completed tasks?'))return;data={balance:0,total:0,completed:[],history:[],streak:1,demoDepositDone:false};saveData();render();toast('Demo data reset.')};
+function render(){if(!user)return;const name=user.name||'PiggyEarner',initial=name[0]?.toUpperCase()||'P';$('hello').textContent='Hi, '+name.split(' ')[0]+' 🐷';$('dateText').textContent=new Date().toLocaleDateString('en-NG',{weekday:'long',day:'numeric',month:'short'});['avatar','bigAvatar'].forEach(id=>$(id).textContent=initial);$('profileName').textContent=name;$('profileEmail').textContent=user.email||'';$('balance').textContent=money(data.balance);$('wBalance').textContent=money(data.balance);if($('demoDepositStatus'))$('demoDepositStatus').textContent=data.demoDepositDone?'Completed · SIMULATED':'Not completed';if($('demoDepositBtn')){$('demoDepositBtn').disabled=!!data.demoDepositDone;$('demoDepositBtn').textContent=data.demoDepositDone?'Demo deposit step completed':'Simulate ₦500 deposit'}$('totalEarned').textContent=money(data.total);$('completedCount').textContent=data.completed.length;$('todayEarned').textContent=money(data.total);$('todayTasks').textContent=Math.min(data.completed.length,5)+'/5';$('streak').textContent=data.streak||1;const pct=Math.min(100,data.completed.length/5*100);$('progressBar').style.width=pct+'%';$('progressText').textContent=`${Math.min(data.completed.length,5)} of 5 tasks completed`;$('dashboardTasks').innerHTML=tasks.slice(0,4).map(taskCard).join('');$('allTasks').innerHTML=tasks.map(taskCard).join('');$('historyWrap').innerHTML=data.history.length?data.history.map(x=>`<div class="historyrow"><div><b>${x.type}</b><div class="muted">${x.date||'Saved activity'}</div></div><span class="${x.amount>0?'positive':'negative'}">${x.amount>0?'+':''}${money(x.amount)}</span></div>`).join(''):'<div class="empty">No activity yet.<br>Complete your first demo task to see it here.</div>'}
+// Owner dashboard for local demo records only. PIN is a UI gate, not real security.
+window.openAdmin=()=>{const pin=prompt('Enter demo admin PIN (default: 2468)');if(pin===null)return;if(pin!=='2468')return toast('Incorrect demo admin PIN.');$('auth').classList.add('hidden');$('app').classList.add('hidden');$('bottom').classList.add('hidden');$('adminApp').classList.remove('hidden');renderAdmin();window.scrollTo(0,0)};
+window.closeAdmin=()=>{if(user){$('adminApp').classList.add('hidden');$('app').classList.remove('hidden');$('bottom').classList.remove('hidden');show('home')}else{$('adminApp').classList.add('hidden');$('auth').classList.remove('hidden')}};
+function escAdmin(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+window.renderAdmin=()=>{const accounts=read('piggy_accounts',{}),emails=Object.keys(accounts);let deposits=[];const rows=[];emails.forEach(email=>{const d=read('piggy_data_'+email,{balance:0,total:0,completed:[],history:[],demoDepositDone:false});(d.history||[]).filter(h=>h.simulated&&String(h.type||'').toLowerCase().includes('deposit')).forEach(h=>deposits.push({email,name:accounts[email]?.name||'Demo user',date:h.date||'Date unavailable',amount:500,status:'SIMULATED — no money collected'}));rows.push({email,name:accounts[email]?.name||'Demo user',deposit:d.demoDepositDone?'Completed (simulated)':'Not completed',balance:Number(d.balance||0),tasks:(d.completed||[]).length})});
+ $('adminUsers').textContent=emails.length;$('adminDeposits').textContent=deposits.length;$('adminValue').textContent=money(deposits.length*500);
+ $('adminDepositRows').innerHTML=deposits.length?deposits.slice().reverse().map(d=>`<div class="historyrow"><div><b>${escAdmin(d.name)}</b><div class="muted">${escAdmin(d.email)}<br>${escAdmin(d.date)}<br><span style="color:#00e5a0">${d.status}</span></div></div><div style="text-align:right"><b>${money(d.amount)}</b><div class="muted">DEMO ONLY</div></div></div>`).join(''):'<div class="empty">No simulated deposit activity yet. Create a demo account and tap “Simulate ₦500 deposit” to test.</div>';
+ $('adminAccountRows').innerHTML=rows.length?rows.map(a=>`<div class="historyrow"><div><b>${escAdmin(a.name)}</b><div class="muted">${escAdmin(a.email)}<br>Tasks completed: ${a.tasks}<br>Demo balance: ${money(a.balance)}</div></div><div style="text-align:right;font-size:11px;color:#00e5a0">${a.deposit}</div></div>`).join(''):'<div class="empty">No demo accounts found in this browser.</div>';
+};
+// PiggyPlay mini-games: local chess and a touch-friendly aircraft arcade.
+const chessSymbols={wk:"♔",wq:"♕",wr:"♖",wb:"♗",wn:"♘",wp:"♙",bk:"♚",bq:"♛",br:"♜",bb:"♝",bn:"♞",bp:"♟"};
+let chessBoardState=[],chessTurn="w",chessSelected=null,chessGameOver=false,chessWinner=null,chessWins={w:0,b:0},chessAiTimer=null,chessCaptured={w:[],b:[]};
+function resetChess(){
+ if(chessAiTimer){clearTimeout(chessAiTimer);chessAiTimer=null}
+ const back=["r","n","b","q","k","b","n","r"];chessBoardState=Array.from({length:8},()=>Array(8).fill(null));
+ for(let c=0;c<8;c++){chessBoardState[0][c]="b"+back[c];chessBoardState[1][c]="bp";chessBoardState[6][c]="wp";chessBoardState[7][c]="w"+back[c]}
+ chessTurn="w";chessSelected=null;chessGameOver=false;chessWinner=null;chessCaptured={w:[],b:[]};drawChess();
+}
+function drawChess(){
+ const el=document.getElementById("chessBoard");if(!el)return;el.innerHTML="";
+ for(let r=0;r<8;r++)for(let c=0;c<8;c++){
+  const b=document.createElement("button"),piece=chessBoardState[r][c];b.className="chessSquare "+((r+c)%2?"dark":"light");
+  if(chessSelected&&chessSelected[0]===r&&chessSelected[1]===c)b.classList.add("selected");
+  if(chessSelected&&validChessMove(chessSelected[0],chessSelected[1],r,c))b.classList.add("hint");
+  if(piece){const span=document.createElement("span");span.className=piece[0]==="w"?"whitePiece":"blackPiece";span.textContent=chessSymbols[piece];b.appendChild(span)}
+  b.setAttribute("aria-label",`${String.fromCharCode(97+c)}${8-r}${piece?" "+piece:""}`);b.onclick=()=>tapChess(r,c);el.appendChild(b);
+ }
+ const p1=document.getElementById("chessPlayer1"),p2=document.getElementById("chessPlayer2");if(p1)p1.classList.toggle("active",!chessGameOver&&chessTurn==="w");if(p2)p2.classList.toggle("active",!chessGameOver&&chessTurn==="b");const w1=document.getElementById("chessWins1"),w2=document.getElementById("chessWins2");if(w1)w1.textContent="Wins: "+chessWins.w;if(w2)w2.textContent="Wins: "+chessWins.b;const status=document.getElementById("chessStatus");if(status)status.textContent=chessGameOver?(chessWinner==="w"?"🏆 You win! You captured the computer’s king. Start a new game for a rematch.":chessWinner==="b"?"🤖 Computer wins! Your king was captured. Start a new game to try again.":"Game over · Start a new game to play again"):chessTurn==="w"?"Your turn (White) · Capture black pieces by moving onto their squares.": "🤖 Computer is thinking…";const pc=document.getElementById("playerCaptures"),cc=document.getElementById("computerCaptures");if(pc)pc.textContent=chessCaptured.w.length?chessCaptured.w.map(x=>chessSymbols[x]).join(" "):"None yet";if(cc)cc.textContent=chessCaptured.b.length?chessCaptured.b.map(x=>chessSymbols[x]).join(" "):"None yet";
+}
+function validChessMove(fr,fc,tr,tc){
+ const p=chessBoardState[fr]?.[fc],target=chessBoardState[tr]?.[tc];if(!p||(target&&target[0]===p[0])||(fr===tr&&fc===tc))return false;
+ const kind=p[1],dr=tr-fr,dc=tc-fc,ar=Math.abs(dr),ac=Math.abs(dc);
+ if(kind==="p"){const dir=p[0]==="w"?-1:1,start=p[0]==="w"?6:1;if(dc===0&&!target&&dr===dir)return true;if(dc===0&&!target&&fr===start&&dr===2*dir&&!chessBoardState[fr+dir][fc])return true;return ar===1&&ac===1&&dr===dir&&!!target}
+ if(kind==="n")return(ar===2&&ac===1)||(ar===1&&ac===2);
+ if(kind==="k")return ar<=1&&ac<=1;
+ if(kind==="r"&&dr!==0&&dc!==0)return false;
+ if(kind==="b"&&ar!==ac)return false;
+ if(kind==="q"&&!(dr===0||dc===0||ar===ac))return false;
+ if(["r","b","q"].includes(kind)){
+  const sr=Math.sign(dr),sc=Math.sign(dc);let r=fr+sr,c=fc+sc;while(r!==tr||c!==tc){if(chessBoardState[r][c])return false;r+=sr;c+=sc}return true;
+ }
+ return false;
+}
+function tapChess(r,c){
+ if(chessGameOver||chessTurn!=="w")return;const p=chessBoardState[r][c];
+ if(!chessSelected){if(p&&p[0]==="w"){chessSelected=[r,c];drawChess()}return}
+ const [fr,fc]=chessSelected;
+ if(p&&p[0]==="w"){chessSelected=[r,c];drawChess();return}
+ if(validChessMove(fr,fc,r,c)){
+  const captured=chessBoardState[r][c];if(captured)chessCaptured.w.push(captured);chessBoardState[r][c]=chessBoardState[fr][fc];chessBoardState[fr][fc]=null;
+  if(chessBoardState[r][c][1]==="p"&&r===0)chessBoardState[r][c]="wq";
+  chessSelected=null;if(captured&&captured[1]==="k"){chessGameOver=true;chessWinner="w";chessWins.w++}else if(!chessBoardState.flat().some(x=>x&&x[0]==="b")){chessGameOver=true;chessWinner="w";chessWins.w++}else chessTurn="b";
+  drawChess();if(!chessGameOver){chessAiTimer=setTimeout(computerChessMove,450)}
+ }else{chessSelected=null;drawChess()}
+}
+function computerChessMove(){
+ chessAiTimer=null;if(chessGameOver||chessTurn!=="b")return;
+ const moves=[];
+ for(let fr=0;fr<8;fr++)for(let fc=0;fc<8;fc++){
+  const p=chessBoardState[fr][fc];if(!p||p[0]!=="b")continue;
+  for(let tr=0;tr<8;tr++)for(let tc=0;tc<8;tc++)if(validChessMove(fr,fc,tr,tc)){
+   const target=chessBoardState[tr][tc];let score= Math.random()*2;
+   if(target){score+=({p:1,n:3,b:3,r:5,q:9,k:100}[target[1]]||0)*2}
+   if(p[1]==="p"&&tr===7)score+=8;
+   // Prefer moving toward the centre a little, while keeping the opponent unpredictable.
+   score+=(3.5-Math.abs(3.5-tc))*0.12;
+   moves.push({fr,fc,tr,tc,score});
+  }
+ }
+ if(!moves.length){chessGameOver=true;chessWinner="w";chessWins.w++;drawChess();return}
+ moves.sort((a,b)=>b.score-a.score);const pool=moves.slice(0,Math.min(5,moves.length));const m=pool[Math.floor(Math.random()*pool.length)];
+ const captured=chessBoardState[m.tr][m.tc];if(captured)chessCaptured.b.push(captured);chessBoardState[m.tr][m.tc]=chessBoardState[m.fr][m.fc];chessBoardState[m.fr][m.fc]=null;
+ if(chessBoardState[m.tr][m.tc][1]==="p"&&m.tr===7)chessBoardState[m.tr][m.tc]="bq";
+ if(captured&&captured[1]==="k"){chessGameOver=true;chessWinner="b";chessWins.b++}else if(!chessBoardState.flat().some(x=>x&&x[0]==="w")){chessGameOver=true;chessWinner="b";chessWins.b++}else chessTurn="w";
+ drawChess();
+}
+window.resetChess=resetChess;
+window.chooseGame=(game,btn)=>{document.querySelectorAll(".gameTab").forEach(x=>x.classList.remove("active"));btn.classList.add("active");document.getElementById("chessGame").classList.toggle("hidden",game!=="chess");document.getElementById("aircraftGame").classList.toggle("hidden",game!=="aircraft");if(game==="aircraft"&&!airRunning)drawAircraft()};
+let airCanvas,airCtx,airRunning=false,airFrame=0,airScore=0,planeX=180,airObstacles=[],airStars=[],airKeys={},airLastSpawn=0,airDistance=0,airGameOver=false;
+function roundRect(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath()}
+function drawRocket(x,y){
+ const c=airCtx; c.save(); c.translate(x,y);
+ // engine plume
+ const flame=c.createLinearGradient(0,12,0,43);flame.addColorStop(0,'#fff6ba');flame.addColorStop(.4,'#ffad4d');flame.addColorStop(1,'rgba(255,95,36,0)');
+ c.fillStyle=flame;c.beginPath();c.moveTo(-7,12);c.quadraticCurveTo(-10,26,-2,42);c.quadraticCurveTo(0,47,2,42);c.quadraticCurveTo(10,26,7,12);c.closePath();c.fill();
+ // side fins
+ c.fillStyle='#b8c8d5';c.beginPath();c.moveTo(-8,0);c.lineTo(-18,15);c.lineTo(-8,13);c.closePath();c.fill();c.beginPath();c.moveTo(8,0);c.lineTo(18,15);c.lineTo(8,13);c.closePath();c.fill();
+ // main fuselage
+ const body=c.createLinearGradient(-10,0,10,0);body.addColorStop(0,'#7f91a5');body.addColorStop(.25,'#f5f8fb');body.addColorStop(.6,'#c8d5e1');body.addColorStop(1,'#64788c');
+ c.fillStyle=body;c.beginPath();c.moveTo(0,-28);c.bezierCurveTo(7,-20,9,-10,9,2);c.lineTo(8,15);c.lineTo(-8,15);c.lineTo(-9,2);c.bezierCurveTo(-9,-10,-7,-20,0,-28);c.fill();
+ c.fillStyle='#dce6ee';c.fillRect(-5,3,10,2);c.fillStyle='#e64e52';c.fillRect(-8,9,16,3);
+ // cockpit window
+ const glass=c.createLinearGradient(-5,-17,5,-7);glass.addColorStop(0,'#a8f4ff');glass.addColorStop(1,'#176a98');c.fillStyle=glass;c.beginPath();c.ellipse(0,-10,4.5,6,0,0,Math.PI*2);c.fill();c.strokeStyle='#f4fbff';c.lineWidth=1;c.stroke();
+ // subtle highlight
+ c.strokeStyle='rgba(255,255,255,.7)';c.lineWidth=1;c.beginPath();c.moveTo(-3,-19);c.quadraticCurveTo(-6,-9,-5,2);c.stroke();c.restore();
+}
+function drawMeteor(o){const c=airCtx;c.save();c.translate(o.x,o.y);c.rotate(o.spin||0);const g=c.createRadialGradient(-4,-5,2,0,0,o.r);g.addColorStop(0,'#ffd18a');g.addColorStop(.35,'#b87556');g.addColorStop(1,'#4d394b');c.fillStyle=g;c.beginPath();c.moveTo(-o.r*.8,-o.r*.3);c.lineTo(-o.r*.3,-o.r);c.lineTo(o.r*.6,-o.r*.7);c.lineTo(o.r,o.r*.1);c.lineTo(o.r*.4,o.r*.8);c.lineTo(-o.r*.6,o.r*.6);c.closePath();c.fill();c.strokeStyle='rgba(255,177,108,.7)';c.lineWidth=2;c.beginPath();c.moveTo(-o.r*.6,0);c.lineTo(-o.r*1.8,3);c.stroke();c.restore()}
+function drawAircraft(){
+ airCanvas=document.getElementById('airCanvas');if(!airCanvas)return;airCtx=airCanvas.getContext('2d');const c=airCtx,w=airCanvas.width,h=airCanvas.height;
+ const bg=c.createLinearGradient(0,0,0,h);bg.addColorStop(0,'#020814');bg.addColorStop(.55,'#10294b');bg.addColorStop(1,'#315b7a');c.fillStyle=bg;c.fillRect(0,0,w,h);
+ // distant nebula glow
+ const glow=c.createRadialGradient(250,190,8,250,190,180);glow.addColorStop(0,'rgba(48,110,170,.22)');glow.addColorStop(1,'rgba(20,40,80,0)');c.fillStyle=glow;c.fillRect(0,0,w,h);
+ for(let i=0;i<90;i++){const x=(i*73+19)%w,y=(i*97+Math.floor(airFrame*(1+i%3)*.45))%h;c.globalAlpha=.25+(i%5)*.13;c.fillStyle=i%7===0?'#9df5ff':'#ffffff';c.beginPath();c.arc(x,y,i%9===0?1.5:.8,0,Math.PI*2);c.fill()}c.globalAlpha=1;
+ // Earth limb at the bottom
+ const earth=c.createLinearGradient(0,h-90,0,h);earth.addColorStop(0,'#4ad6ef');earth.addColorStop(.12,'#1e7cb7');earth.addColorStop(.5,'#123d78');earth.addColorStop(1,'#08172e');c.fillStyle=earth;c.beginPath();c.ellipse(w/2,h+63,w*.86,125,0,Math.PI,Math.PI*2);c.fill();c.strokeStyle='rgba(115,240,255,.9)';c.lineWidth=3;c.beginPath();c.ellipse(w/2,h+54,w*.86,125,0,Math.PI,Math.PI*2);c.stroke();
+ // HUD overlay
+ c.fillStyle='rgba(3,14,30,.68)';roundRect(c,12,12,128,48,8);c.fill();c.fillStyle='#90dff8';c.font='10px system-ui';c.fillText('MISSION CONTROL',22,27);c.fillStyle='#f2fbff';c.font='bold 13px system-ui';c.fillText('ALT  '+Math.floor(airDistance)+' km',22,47);
+ airObstacles.forEach(drawMeteor);airStars.forEach(o=>{c.save();c.translate(o.x,o.y);c.rotate(airFrame*.03);c.fillStyle='#7bf3ff';c.shadowColor='#51ddff';c.shadowBlur=12;c.beginPath();for(let i=0;i<8;i++){let a=i*Math.PI/4,r=i%2?5:10;c.lineTo(Math.cos(a)*r,Math.sin(a)*r)}c.closePath();c.fill();c.restore()});
+ drawRocket(planeX,h-73);
+ if(!airRunning){c.fillStyle='rgba(2,8,20,.58)';c.fillRect(0,0,w,h);c.textAlign='center';c.fillStyle='#b7f4ff';c.font='bold 20px system-ui';c.fillText(airGameOver?'MISSION ENDED':'PIGGYEARN SPACE PROGRAM',w/2,h/2-28);c.fillStyle='#ffffff';c.font='12px system-ui';c.fillText(airGameOver?'Tap Launch to try again':'Launch a reusable rocket into orbit',w/2,h/2-5);c.fillStyle='#77dff5';c.font='11px system-ui';c.fillText('STEER  •  DODGE METEORS  •  COLLECT ENERGY',w/2,h/2+18);c.textAlign='start'}
+}
+function aircraftLoop(ts){if(!airRunning)return;airFrame++;const w=airCanvas.width,h=airCanvas.height;airDistance+=.035;
+ if(airKeys.left)planeX-=4.2;if(airKeys.right)planeX+=4.2;planeX=Math.max(22,Math.min(w-22,planeX));
+ if(ts-airLastSpawn>570){if(Math.random()>.2)airObstacles.push({x:18+Math.random()*(w-36),y:-15,r:9+Math.random()*8,spin:Math.random()*6});if(Math.random()>.32)airStars.push({x:18+Math.random()*(w-36),y:-18});airLastSpawn=ts}
+ airObstacles.forEach(o=>{o.y+=2.5+Math.min(2,airDistance/80);o.spin+=.025});airStars.forEach(o=>o.y+=2.7);
+ airStars=airStars.filter(o=>{if(Math.abs(o.x-planeX)<20&&Math.abs(o.y-(h-73))<24){airScore++;document.getElementById('airScore').textContent=airScore;return false}return o.y<h+20});
+ const hit=airObstacles.some(o=>Math.hypot(o.x-planeX,o.y-(h-73))<o.r+12);airObstacles=airObstacles.filter(o=>o.y<h+25);drawAircraft();
+ if(hit){airRunning=false;airGameOver=true;document.getElementById('airState').textContent='Mission ended';drawAircraft();return}document.getElementById('airState').textContent='In orbit';airFrame=requestAnimationFrame(aircraftLoop)
+}
+window.startAircraft=()=>{airCanvas=document.getElementById('airCanvas');if(!airCanvas)return;airCtx=airCanvas.getContext('2d');airRunning=false;if(airFrame)cancelAnimationFrame(airFrame);airScore=0;airDistance=0;planeX=airCanvas.width/2;airObstacles=[];airStars=[];airFrame=0;airLastSpawn=0;airGameOver=false;document.getElementById('airScore').textContent='0';document.getElementById('airState').textContent='Launching';airRunning=true;airFrame=requestAnimationFrame(aircraftLoop)};
+window.movePlane=dir=>{if(!airCanvas){airCanvas=document.getElementById('airCanvas')}planeX=Math.max(22,Math.min((airCanvas?.width||360)-22,planeX+dir*30));if(!airRunning)drawAircraft()};
+document.addEventListener('keydown',e=>{if(e.key==='ArrowLeft'){airKeys.left=true;e.preventDefault()}if(e.key==='ArrowRight'){airKeys.right=true;e.preventDefault()}});document.addEventListener('keyup',e=>{if(e.key==='ArrowLeft')airKeys.left=false;if(e.key==='ArrowRight')airKeys.right=false});
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&airRunning){airRunning=false;document.getElementById('airState').textContent='Paused';drawAircraft()}});
+resetChess();drawAircraft();
+
+
+</script>
+</body>
+</html>
